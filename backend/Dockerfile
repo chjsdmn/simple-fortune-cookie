@@ -1,16 +1,23 @@
-FROM golang:1.18
+FROM golang:1.16 AS build
+
+RUN mkdir /app
+
+ADD . /app
 
 WORKDIR /app
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
+COPY * ./
+
 RUN go mod download github.com/gomodule/redigo
 
-COPY *.go ./
- 
-RUN go build -o /docker-gs-ping
+RUN CGO_ENABLED=0 GOOS=linux go build -o backend .
 
-EXPOSE 8080
-CMD [ "/docker-gs-ping" ]
+FROM alpine:latest as run
+
+COPY --from=build /app/backend ./
+
+EXPOSE 9000
+
+CMD ["./backend"]
+
 
