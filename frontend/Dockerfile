@@ -1,14 +1,21 @@
-FROM golang:1.18
+FROM golang:1.16 AS build
+
+RUN mkdir /app
+
+ADD . /app
 
 WORKDIR /app
 
-COPY go.mod ./
-RUN go mod download
+COPY * ./
 
-COPY *.go ./
+RUN CGO_ENABLED=0 GOOS=linux go build -o frontend .
 
-RUN go build -o /docker-gs-ping
+FROM alpine:latest as run
 
-EXPOSE 8080
+COPY --from=build /app/ ./
 
-CMD [ "/docker-gs-ping" ]
+EXPOSE 9000
+
+CMD ["./frontend"]
+
+
