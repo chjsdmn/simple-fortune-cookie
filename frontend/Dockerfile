@@ -11,13 +11,4 @@ RUN go build -o /docker-gs-ping
 
 EXPOSE 8080
 
-=======
-RUN go download
-
-COPY *.go ./
- 
-RUN go build -o /docker-gs-ping
-
-EXPOSE 8080
->>>>>>> refs/remotes/origin/main
 CMD [ "/docker-gs-ping" ]
